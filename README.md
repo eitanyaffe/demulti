@@ -1,6 +1,6 @@
 # demulti
 
-``
+```
 Usage: demulti.pl <input table> <index length> <input R1> <input R2> <output dir>
 Input:
  <input table>: input table with columns (phase,read1index,read2index)
@@ -14,4 +14,4 @@ Output files (in OUTDIR):
  OUTDIR/matrix.txt: phase confusion matrix
 Example: 
 %> perl demulti.pl examples/index.txt 7 examples/R1.fastq  examples/R2.fastq  examples/out
-``
+```
