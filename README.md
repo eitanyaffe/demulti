@@ -1,4 +1,4 @@
-# demulti
+# demulti: phasing indexed reads
 
 ```
 Usage: demulti.pl <input table> <index length> <input R1> <input R2> <output dir>
