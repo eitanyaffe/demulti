@@ -1,5 +1,7 @@
 # demulti: phasing indexed reads
 
+The script phases paired reads based on an index table into an output directory. It also outputs general stats (indices with 'N's, not in index table, mixed-up indices), and an index confusion matrix (relevant only if the two sides had an index from the table).
+
 ```
 Usage: demulti.pl <input table> <index length> <input R1> <input R2> <output dir>
 Input:
