@@ -12,14 +12,13 @@ if ($#ARGV == -1) {
     print " <input R1>: R1 fastq\n";
     print " <input R2>: R2 fastq\n";
     print " <output dir>: Write output to this directory\n";
-    print " <output prefix id N>: Zero or more optional prefix ids. Ids are matched in the input table and if there is no matching column the id is outputed as-is.\n";
-    
+    print " <output prefix id N>: Zero or more optional prefix ids\n";
     print "Output files (in OUTDIR):\n";
-    print " OUTDIR/PHASE_R[12].fastq: R1 and R2 of phased fastq files\n";
+    print " OUTDIR/PHASE_R[12].fastq: R1 and R2 of phased fastq files, with an optional PREFIX that is generated using one or more supplied prefix ids\n";
     print " OUTDIR/stats.txt: general stats of phasing\n";
     print " OUTDIR/matrix.txt: phase confusion matrix\n";
-    print "Example 1: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out\n";
-    print "Example 2: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out run7 sample\n";
+    print "Example 1: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out_simple\n";
+    print "Example 2: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out_with_prefix run7 sample\n";
     exit 1;
 }
 
@@ -30,7 +29,6 @@ my $ifn_R2 = $ARGV[3];
 my $odir = $ARGV[4];
 my @ids = @ARGV[5 .. $#ARGV];
 
-if (scalar @ids > 0) { print "prefix ids: ", join(", ", @ids), "\n"; }
 (system('mkdir -p '.$odir) == 0) or die "unable to create directory $odir";
 
 ###############################################################################################
@@ -38,9 +36,16 @@ if (scalar @ids > 0) { print "prefix ids: ", join(", ", @ids), "\n"; }
 ###############################################################################################
 
 print "reading index table: $ifn_table\n";
-open(IN, $ifn_table) || die $ifn_table;
+open(IN, $ifn_table) || die "file not found ".$ifn_table;
 my $header = <IN>;
 my %h = parse_header($header);
+
+# print join(", ", keys %h), "\n";
+for (my $i=0; $i<=$#ids; $i++) {
+    my $id = $ids[$i];
+    print "output prefix ".($i+1).": $id (", (defined($h{$id}) ? "table-based" : "constant"), ")\n";
+}
+# exit(0);
 
 my %phases;
 my %indices1;
@@ -97,8 +102,8 @@ print "reading fastq R2: $ifn_R2\n";
 
 print "generating output in: $odir\n";
 
-open(IN1, $ifn_R1) or die;
-open(IN2, $ifn_R2) or die;
+open(IN1, $ifn_R1) or die "file not found $ifn_R1";
+open(IN2, $ifn_R2) or die "file not found $ifn_R2";
 
 my $phase = -1;
 my $iindex = 0;
