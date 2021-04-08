@@ -16,7 +16,7 @@ Output files (in OUTDIR):
  OUTDIR/stats.txt: general stats of phasing
  OUTDIR/matrix.txt: phase confusion matrix
 Example 1: 
-%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out
+%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out_simple
 Example 2: 
-%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out run7 sample
+%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out_with_prefix run7 sample
 ```
