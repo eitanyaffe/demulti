@@ -5,18 +5,21 @@ use warnings FATAL => qw(all);
 use File::Basename;
 
 if ($#ARGV == -1) {
-    print "Usage: $0 <input table> <index length> <input R1> <input R2> <output dir>\n";
+    print "Usage: $0 <input table> <index length> <input R1> <input R2> <output dir> [output prefix id 1, output prefix id2, ...]\n";
     print "Input:\n";
     print " <input table>: input table with columns (phase,read1index,read2index)\n";
     print " <index length>: length of index in nt\n";
     print " <input R1>: R1 fastq\n";
     print " <input R2>: R2 fastq\n";
     print " <output dir>: Write output to this directory\n";
+    print " <output prefix id N>: Zero or more optional prefix ids. Ids are matched in the input table and if there is no matching column the id is outputed as-is.\n";
+    
     print "Output files (in OUTDIR):\n";
     print " OUTDIR/PHASE_R[12].fastq: R1 and R2 of phased fastq files\n";
     print " OUTDIR/stats.txt: general stats of phasing\n";
     print " OUTDIR/matrix.txt: phase confusion matrix\n";
-    print "Example: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq  examples/R2.fastq  examples/out\n";
+    print "Example 1: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out\n";
+    print "Example 2: \n%> perl demulti.pl examples/index.txt 7 examples/R1.fastq examples/R2.fastq examples/out run7 sample\n";
     exit 1;
 }
 
@@ -25,7 +28,9 @@ my $ilength = $ARGV[1];
 my $ifn_R1 = $ARGV[2];
 my $ifn_R2 = $ARGV[3];
 my $odir = $ARGV[4];
+my @ids = @ARGV[5 .. $#ARGV];
 
+if (scalar @ids > 0) { print "prefix ids: ", join(", ", @ids), "\n"; }
 (system('mkdir -p '.$odir) == 0) or die "unable to create directory $odir";
 
 ###############################################################################################
@@ -52,11 +57,16 @@ while (my $line = <IN>) {
     $phases{$phase}->{R1} = $i1;
     $phases{$phase}->{R2} = $i2;
 
+    my $prefix = "";
+    foreach my $id (@ids) {
+        my $prefix_id = defined($h{$id}) ? $f[$h{$id}] : $id;
+        $prefix .= $prefix_id."_";
+    }
     $indices1{$i1} = $phase;
     $indices2{$i2} = $phase;
     
-    my $ofn1 = $odir."/".$phase."_R1.fastq";
-    my $ofn2 = $odir."/".$phase."_R2.fastq";
+    my $ofn1 = $odir."/".$prefix.$phase."_R1.fastq";
+    my $ofn2 = $odir."/".$prefix.$phase."_R2.fastq";
     
     open(my $fh1, ">", $ofn1);
     open(my $fh2, ">", $ofn2);
